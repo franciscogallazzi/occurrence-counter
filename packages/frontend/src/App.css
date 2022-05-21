@@ -1,0 +1,28 @@
+.App {
+  background-color: #282c34;
+  min-height: 100vh;
+}
+
+.titles {
+  color: #fff;
+}
+
+.container {
+  padding-top: 50px;
+}
+
+.form {
+  display: flex;
+  align-items: baseline;
+}
+
+.form-buttons {
+  margin-left: auto;
+  
+}
+.form-buttons > * {
+  margin-right: 10px;
+}
+.form-buttons > *:last-child {
+  margin-right: 0px;
+}
