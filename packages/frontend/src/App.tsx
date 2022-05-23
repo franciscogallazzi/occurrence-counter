@@ -35,7 +35,7 @@ function App() {
 
   const [text, setText] = useState<string>(defaultText)
 
-  const [error, setError] = useState<ErrorObject[] | null>(null)
+  const [error, setError] = useState<ErrorObject[] | Error | null>(null)
 
   const [formData, setFormData] = useState<{ text: string, data: string }>({
     text,
@@ -56,11 +56,12 @@ function App() {
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setText(formData.text)
+    setError(null)
     try {
+      setText(formData.text)
       setData(JSON.parse(formData.data))
     } catch (error) {
-      setData({})
+      setError(error as Error)
     }
 
   }
@@ -95,7 +96,7 @@ function App() {
     <div className='App'>
       <Container className='container'>
         <Row>
-          <Col>
+          <Col xs={12} md={6}>
             <h2 className='titles'>Input</h2>
             <Form onSubmit={submit} className="form">
               <Form.Group className="mb-3" controlId="text">
@@ -118,12 +119,12 @@ function App() {
               </div>
             </Form>
           </Col>
-          <Col>
+          <Col md={6} className="d-none d-md-block">
             <h2 className='titles'>Result</h2>
           </Col>
         </Row>
         <Row className='json'>
-          <Col style={{ position: 'relative' }}>
+          <Col xs={12} md={6} style={{ position: 'relative' }}>
             <CodeEditorEditable
               value={formData.data}
               setValue={(value: string) => updateFormDataValue("data", value)}
@@ -133,8 +134,9 @@ function App() {
               inlineNumbers
             />
           </Col>
-          <Col style={{ position: 'relative' }}>
-            {!error ?
+          <Col xs={12} md={6} style={{ position: 'relative' }}>
+            <h2 className='titles d-block d-md-none'>Result</h2>
+            {error === null ?
               <CodeEditorEditable
                 value={stringify(occurrenceCounterData)}
                 setValue={(value: string) => { }}
@@ -146,7 +148,9 @@ function App() {
 
               : <Alert variant="danger">
                 {
-                  error.map((e, i) => <span key={i}>{`${e.instancePath} ${e.message}`}</span>)
+                  (Array.isArray(error)) ?
+                    (error as ErrorObject[]).map((e, i) => <span key={i}>{`${e.instancePath} ${e.message}`}</span>)
+                    : (error as Error).message
                 }
               </Alert>}
           </Col>
